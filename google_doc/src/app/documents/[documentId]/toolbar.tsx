@@ -23,6 +23,7 @@ import {
   Redo2Icon,
   RemoveFormattingIcon,
   SearchIcon,
+  SparklesIcon,
   SpellCheckIcon,
   UnderlineIcon,
   Undo2Icon,
@@ -552,7 +553,12 @@ const ToolbarButton = ({ onClick, isActive, disabled, icon: Icon }: ToolbarButto
   );
 };
 
-export const Toolbar = () => {
+interface ToolbarProps {
+  onAIToggle?: () => void;
+  aiPanelOpen?: boolean;
+}
+
+export const Toolbar = ({ onAIToggle, aiPanelOpen }: ToolbarProps) => {
   const { editor } = useEditorStore();
 
   const sections: { label: string; icon: LucideIcon; onClick: () => void; disabled?: boolean; isActive?: boolean }[][] = [
@@ -661,6 +667,21 @@ export const Toolbar = () => {
       {sections[2].map((item) => (
         <ToolbarButton key={item.label} {...item} />
       ))}
+
+      <Separator orientation="vertical" className="h-6 bg-neutral-300" />
+
+      <button
+        onClick={onAIToggle}
+        className={cn(
+          'flex h-7 items-center gap-1.5 rounded-sm px-2 text-sm font-medium transition-colors',
+          aiPanelOpen
+            ? 'bg-gradient-to-r from-violet-500 to-indigo-600 text-white hover:from-violet-600 hover:to-indigo-700'
+            : 'text-indigo-600 hover:bg-indigo-50',
+        )}
+      >
+        <SparklesIcon className="size-4" />
+        <span>AI</span>
+      </button>
     </div>
   );
 };
