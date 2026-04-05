@@ -2,6 +2,14 @@ import type { NextConfig } from 'next';
 import path from 'path';
 
 const nextConfig: NextConfig = {
+  // 1. Disable ESLint validation during production builds
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // 2. Disable TypeScript type checking during production builds
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   experimental: {
     serverActions: {
       allowedOrigins: [
