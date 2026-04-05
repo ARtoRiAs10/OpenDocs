@@ -14,7 +14,8 @@ const nextConfig: NextConfig = {
     serverActions: {
       allowedOrigins: [
         'cuddly-invention-v64xqgx4xxwcp6j9-3000.app.github.dev',
-        'localhost:3000'
+        'localhost:3000',
+        'https://google-docs-clone-five-gamma.vercel.app',
       ],
     },
   },
