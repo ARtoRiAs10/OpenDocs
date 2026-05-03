@@ -2,17 +2,17 @@ import type { NextConfig } from 'next';
 import path from 'path';
 
 const nextConfig: NextConfig = {
-  // 1. Disable ESLint validation during production builds
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // 2. Disable TypeScript type checking during production builds
   typescript: {
     ignoreBuildErrors: true,
   },
   experimental: {
     serverActions: {
       allowedOrigins: [
+        'obscure-space-disco-r96jrjxg4j725gxg-3000.app.github.dev',
+        // Keep existing ones
         'cuddly-invention-v64xqgx4xxwcp6j9-3000.app.github.dev',
         'localhost:3000',
         'https://google-docs-clone-five-gamma.vercel.app',
@@ -20,10 +20,18 @@ const nextConfig: NextConfig = {
     },
   },
   webpack: (config, { isServer }) => {
+    // ✅ Existing: single yjs instance
     if (!isServer) {
-      // Webpack: Ensure that all imports of 'yjs' resolve to the same instance
       config.resolve.alias['yjs'] = path.resolve(__dirname, 'node_modules/yjs');
     }
+
+    // ✅ NEW: prevent Next.js bundling pino's worker thread files
+    config.externals = [
+      ...(Array.isArray(config.externals) ? config.externals : []),
+      'pino-pretty',
+      'thread-stream',
+    ];
+
     return config;
   },
 };

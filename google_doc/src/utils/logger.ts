@@ -2,24 +2,17 @@ import pino from 'pino';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
+// ✅ No transport, no worker thread, safe in Next.js
 export const logger = pino({
-  level: process.env.LOG_LEVEL ?? 'info',
+  level: process.env.LOG_LEVEL ?? (isDevelopment ? 'debug' : 'info'),
   base: { service: 'opendocs' },
-  // 1. Disable asynchronous hooks that require workers
-  async: false, 
-  // 2. Avoid 'transport' which spawns a separate thread
-  // Only use pino-pretty if you are NOT in a restricted worker environment
-  ...(isDevelopment && typeof window === 'undefined'
+  // Pretty-print in dev using built-in formatters — no pino-pretty needed
+  ...(isDevelopment
     ? {
-        transport: {
-          target: 'pino-pretty',
-          options: { 
-            colorize: true, 
-            ignore: 'pid,hostname',
-            // This forces pino-pretty to stay more stable in some environments
-            sync: true 
-          },
+        formatters: {
+          level: (label: string) => ({ level: label.toUpperCase() }),
         },
+        timestamp: pino.stdTimeFunctions.isoTime,
       }
     : {}),
 });

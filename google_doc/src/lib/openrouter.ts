@@ -19,9 +19,9 @@ function getHeaders() {
 // ── Model registry ────────────────────────────────────────────────────────────
 // Change a model in one place → every feature picks it up automatically.
 export const MODELS = {
-  default: 'stepfun/step-3.5-flash:free',       // fast & cheap
-  smart: 'stepfun/step-3.5-flash:free',     // heavy tasks
-  embedding: 'stepfun/step-3.5-flash:free',
+  default: 'openai/gpt-oss-120b:free',       // fast & cheap
+  smart: 'openai/gpt-oss-120b:free',     // heavy tasks
+  embedding: 'openai/gpt-oss-120b:free',
 } as const;
 
 export type ModelKey = keyof typeof MODELS;

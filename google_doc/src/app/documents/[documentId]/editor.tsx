@@ -44,6 +44,12 @@ export const Editor = ({ initialContent }: EditorProps) => {
 
   const editor = useEditor({
     onCreate: ({ editor }) => {
+      if (initialContent && editor.isEmpty) {
+          // Small timeout lets Liveblocks finish initializing first
+          setTimeout(() => {
+            editor.commands.setContent(initialContent);
+        }, 0);
+      }
       editor?.commands.setFontFamily('Arial');
       setEditor(editor);
     },

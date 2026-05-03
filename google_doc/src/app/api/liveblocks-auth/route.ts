@@ -2,7 +2,6 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { Liveblocks } from '@liveblocks/node';
 import { ConvexHttpClient } from 'convex/browser';
 import { NextRequest, NextResponse } from 'next/server';
-
 import { api } from '@/../convex/_generated/api';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
@@ -34,11 +33,16 @@ export async function POST(req: NextRequest) {
 
   
   const isSharedUser = !!(
-    document.roomAccess &&
-    document.roomAccess[user.id] !== undefined
+    document.roomAccess && (
+      document.roomAccess.includes(user.id) ||
+      document.roomAccess.includes(user.primaryEmailAddress?.emailAddress ?? '')
+    )
   );
 
-  if (!isOwner && !isOrganizationMember && !isSharedUser) {
+  
+  const isPublicAccess = document.isPublic !== false;
+
+  if (!isOwner && !isOrganizationMember && !isSharedUser && !isPublicAccess) {
     return new NextResponse('Unauthorized!', { status: 401 });
   }
 
@@ -57,11 +61,11 @@ export async function POST(req: NextRequest) {
     userInfo: { name, avatar: user.imageUrl, color },
   });
 
-  
+  // Owner/org get full access; shared users get full unless explicitly readonly
   const userPermission =
-    isOwner || isOrganizationMember
+    isOwner || isOrganizationMember || isPublicAccess
       ? session.FULL_ACCESS
-      : document.roomAccess?.[user.id] === 'readonly'
+      : document.roomAccess?.includes(`readonly:${user.id}`)
         ? session.READ_ACCESS
         : session.FULL_ACCESS;
 

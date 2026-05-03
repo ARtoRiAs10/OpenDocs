@@ -8,6 +8,8 @@ export default defineSchema({
     ownerId: v.string(),
     roomId: v.optional(v.string()),
     organizationId: v.optional(v.string()),
+    isPublic: v.optional(v.boolean()),        
+    roomAccess: v.optional(v.array(v.string())), 
   })
     .index('by_owner_id', ['ownerId'])
     .index('by_organization_id', ['organizationId'])
@@ -16,12 +18,11 @@ export default defineSchema({
       filterFields: ['ownerId', 'organizationId'],
     }),
 
-  // NEW: Version history snapshots (Yjs binary state)
   versions: defineTable({
     documentId: v.id('documents'),
-    snapshot: v.bytes(),               // Y.encodeStateAsUpdateV2 output
-    label: v.optional(v.string()),     // user-named e.g. "Before client meeting"
-    createdAt: v.number(),             // Unix ms
-    createdBy: v.string(),             // Clerk userId
+    snapshot: v.bytes(),
+    label: v.optional(v.string()),
+    createdAt: v.number(),
+    createdBy: v.string(),
   }).index('by_document', ['documentId', 'createdAt']),
 });

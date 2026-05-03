@@ -21,7 +21,7 @@ export const Document = ({ preloadedDocument, roomId }: DocumentProps) => {
   const [aiOpen, setAiOpen] = useState(false);
 
   return (
-    <Room roomId={roomId}>
+    <Room key={roomId} roomId={roomId}>
       <div className="min-h-screen bg-[#fafbfd]">
         <div className="fixed inset-x-0 top-0 z-10 flex flex-col gap-y-2 bg-[#FAFBFD] px-4 pt-2 print:hidden">
           <Navbar data={document} />
@@ -30,7 +30,7 @@ export const Document = ({ preloadedDocument, roomId }: DocumentProps) => {
 
         <div className="flex pt-[114px] print:pt-0">
           <div className="flex-1 min-w-0">
-            <Editor initialContent={document.initialContent} />
+            <Editor key={roomId} initialContent={document.initialContent} />
           </div>
 
           {aiOpen && (

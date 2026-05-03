@@ -20,6 +20,8 @@ export const create = mutation({
       ownerId: user.subject,
       organizationId,
       initialContent: args.initialContent,
+      isPublic: true,
+      roomAccess: [],
     });
 
     return documentId;
@@ -132,5 +134,45 @@ export const updateById = mutation({
     await ctx.db.patch(args.id, { title: args.title });
 
     return args.id;
+  },
+});
+
+export const setPublicAccess = mutation({
+  args: { id: v.id('documents'), isPublic: v.boolean() },
+  handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) throw new ConvexError('Unauthorized!');
+    const document = await ctx.db.get(args.id);
+    if (!document) throw new ConvexError('Document not found!');
+    if (document.ownerId !== user.subject) throw new ConvexError('Unauthorized!');
+    await ctx.db.patch(args.id, { isPublic: args.isPublic });
+  },
+});
+
+export const shareWithUser = mutation({
+  args: { id: v.id('documents'), userEmail: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) throw new ConvexError('Unauthorized!');
+    const document = await ctx.db.get(args.id);
+    if (!document) throw new ConvexError('Document not found!');
+    if (document.ownerId !== user.subject) throw new ConvexError('Unauthorized!');
+    const existing = document.roomAccess ?? [];
+    if (!existing.includes(args.userEmail)) {
+      await ctx.db.patch(args.id, { roomAccess: [...existing, args.userEmail] });
+    }
+  },
+});
+
+export const revokeAccess = mutation({
+  args: { id: v.id('documents'), userId: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+    if (!user) throw new ConvexError('Unauthorized!');
+    const document = await ctx.db.get(args.id);
+    if (!document) throw new ConvexError('Document not found!');
+    if (document.ownerId !== user.subject) throw new ConvexError('Unauthorized!');
+    const updated = (document.roomAccess ?? []).filter((id) => id !== args.userId);
+    await ctx.db.patch(args.id, { roomAccess: updated });
   },
 });

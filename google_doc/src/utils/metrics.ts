@@ -5,8 +5,8 @@ const BUCKET_TTL = 120;
 
 export async function recordLatency(route: string, ms: number) {
   const key = `metrics:latency:${route}`;
-  await redis.lPush(key, ms.toString()).catch(() => {});
-  await redis.lTrim(key, 0, SAMPLE_WINDOW - 1).catch(() => {});
+  await redis.lpush(key, ms.toString()).catch(() => {});
+  await redis.ltrim(key, 0, SAMPLE_WINDOW - 1).catch(() => {});
   await redis.expire(key, 86400).catch(() => {});
 }
 
@@ -18,7 +18,7 @@ export async function incrementThroughput(route: string) {
 }
 
 export async function getP95Latency(route: string): Promise<number | null> {
-  const samples = await redis.lRange(`metrics:latency:${route}`, 0, -1).catch(() => [] as string[]);
+  const samples = await redis.lrange(`metrics:latency:${route}`, 0, -1).catch(() => [] as string[]);
   if (!samples.length) return null;
   const sorted = samples.map(Number).sort((a, b) => a - b);
   return sorted[Math.floor(sorted.length * 0.95)];
@@ -30,7 +30,7 @@ export async function getThroughput(route: string): Promise<number> {
   const buckets = await Promise.all(
     Array.from({ length: 60 }, (_, i) => redis.get(`metrics:rps:${route}:${now - i}`).catch(() => null)),
   );
-  buckets.forEach((v) => { if (v) total += parseInt(v, 10); });
+  buckets.forEach((v) => { if (v) total += parseInt(String(v), 10); });
   return Math.round(total / 60);
 }
 

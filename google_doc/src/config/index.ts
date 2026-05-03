@@ -47,7 +47,7 @@ export const siteConfig: Metadata = {
     'lucide-react',
   ] as Array<string>,
   authors: {
-    name: 'Sanidhya Kumar Verma',
+    name: 'Gaurav Kumar',
     url: 'https://github.com/ARtoRiAs10',
   },
 } as const;
