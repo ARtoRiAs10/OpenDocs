@@ -1,4 +1,4 @@
-# 📝 Google Docs Clone
+# 📝 OpenDoc
 
 A collaborative, real-time document editing app built with modern tools and technologies like **Next.js**, **React**, **TypeScript**, **Convex**, **Clerk**, and **Liveblocks**. It replicates key features of Google Docs including real-time editing, user mentions, reactions, and a rich-text editor experience powered by **Tiptap**.
 
